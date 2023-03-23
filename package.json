@@ -1,0 +1,8 @@
+{
+    "name": "jp.shiguredo.sora-unity-sdk-samples",
+    "author": "test",
+    "version": "1.0.0",
+    "displayName": "SoraUnitySDKSamples",
+    "description": "This is a test package",
+    "unity": "2020.3"
+}
