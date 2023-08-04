@@ -831,6 +831,7 @@ public class SoraSample : MonoBehaviour
         sora.SwitchCamera(Sora.CameraConfig.FromDeviceCamera(switchCapturerDevices[switchCapturerDeviceIndex], videoWidth, videoHeight, videoFps));
         captureUnityCamera = false;
     }
+    // Unity Camera は一つ
     public void OnClickSwitchUnityCamera()
     {
         if (sora == null)
