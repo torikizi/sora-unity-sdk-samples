@@ -2964,10 +2964,10 @@ MonoBehaviour:
   renderTarget: {fileID: 0}
   scrollViewContent: {fileID: 527347496}
   baseContent: {fileID: 1834025664}
-  signalingUrl: wss://sora-cl1.torikizi.com/signaling
+  signalingUrl: 
   signalingUrlCandidate: []
   insecure: 0
-  channelId: sora
+  channelId: 
   clientId: 
   bundleId: 
   signalingNotifyMetadata: 
@@ -2993,7 +2993,7 @@ MonoBehaviour:
   audioSourceInput: {fileID: 1000410327}
   unityAudioOutput: 0
   audioSourceOutput: {fileID: 1361603390}
-  videoCapturerDevice: Camera (NVIDIA Broadcast)
+  videoCapturerDevice: 
   audioRecordingDevice: 
   audioPlayoutDevice: 
   spotlight: 0
