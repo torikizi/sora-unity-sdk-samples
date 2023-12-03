@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using UnityEngine.UI;
 
 public class SoraSample : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class SoraSample : MonoBehaviour
     public UnityEngine.UI.Button buttonVideoMute;
     public UnityEngine.UI.Button buttonAudioMute;
 
+    //Dropdownを格納する変数
+    public Dropdown codectypeDropdown;
     public SampleType sampleType;
     // 実行中に変えられたくないので実行時に固定する
     SampleType fixedSampleType;
@@ -622,6 +625,23 @@ public class SoraSample : MonoBehaviour
                 access_token = metadataAccessToken
             };
             metadata = JsonUtility.ToJson(md);
+        }
+        // Dropdown の値によって videoCodecType を設定する
+        int selectedcodectype = codectypeDropdown.value;
+        switch (selectedcodectype)
+        {
+            case 0:
+                videoCodecType = Sora.VideoCodecType.VP9;
+                break;
+            case 1:
+                videoCodecType = Sora.VideoCodecType.VP8;
+                break;
+            case 2:
+                videoCodecType = Sora.VideoCodecType.H264;
+                break;
+            case 3:
+                videoCodecType = Sora.VideoCodecType.AV1;
+                break;
         }
         // enableVideoVp9Params が true の場合はメタデータを設定する
         string videoVp9ParamsJson = "";
