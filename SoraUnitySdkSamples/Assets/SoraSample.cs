@@ -5,6 +5,8 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class SoraSample : MonoBehaviour
 {
@@ -31,6 +33,13 @@ public class SoraSample : MonoBehaviour
 
     //Dropdownを格納する変数
     public Dropdown codectypeDropdown;
+    public Dropdown videoSizeDropdown;
+    // InputTextを格納する変数
+    public InputField inputDatachannelsMessege;
+    // 受信したメッセージを表示する
+    public Text messageText;
+    private Queue<string> messages = new Queue<string>(); // メッセージを保存するキュー
+    private int maxMessages = 5; // 表示する最大メッセージ数
     public SampleType sampleType;
     // 実行中に変えられたくないので実行時に固定する
     SampleType fixedSampleType;
@@ -106,15 +115,18 @@ public class SoraSample : MonoBehaviour
 
     public int videoBitRate = 0;
     public int videoFps = 30;
-    public enum VideoSize
-    {
-        QVGA,
-        VGA,
-        HD,
-        FHD,
-        _4K,
-    }
-    public VideoSize videoSize = VideoSize.VGA;
+    //public int videoSize = 0;
+    /*
+        public enum VideoSize
+        {
+            QVGA,
+            VGA,
+            HD,
+            FHD,
+            _4K,
+        }
+    */
+    //public VideoSize videoSize = VideoSize.VGA;
 
     [System.Serializable]
     public class Rule
@@ -376,7 +388,17 @@ public class SoraSample : MonoBehaviour
         };
         sora.OnMessage = (label, data) =>
         {
+            string message = System.Text.Encoding.UTF8.GetString(data);
             Debug.LogFormat("OnMessage: label={0} data={1}", label, System.Text.Encoding.UTF8.GetString(data));
+            // メッセージをキューに追加
+            if (messages.Count >= maxMessages)
+            {
+                messages.Dequeue(); // キューが最大数に達したら、古いメッセージを削除
+            }
+            messages.Enqueue(message);
+
+            // UIテキストにメッセージを表示
+            messageText.text = string.Join("\n", messages.ToArray());
         };
         // 切断時のコールバック
         // sora.Connect() を呼び出した後、エラー時や切断時に１回だけ OnDisconnect が呼ばれる。
@@ -678,6 +700,8 @@ public class SoraSample : MonoBehaviour
 
         int videoWidth;
         int videoHeight;
+        int videoSize = videoSizeDropdown.value;
+        Debug.Log("videoSize=" + videoSize);
         GetVideoSize(videoSize, out videoWidth, out videoHeight);
 
         if (audioCodecType == Sora.AudioCodecType.LYRA)
@@ -808,30 +832,30 @@ public class SoraSample : MonoBehaviour
         Debug.LogFormat("Sora is Created: signalingUrl={0}, channelId={1}", signalingUrl, channelId);
     }
 
-    private static void GetVideoSize(VideoSize videoSize, out int videoWidth, out int videoHeight)
+    private static void GetVideoSize(int videoSize, out int videoWidth, out int videoHeight)
     {
         videoWidth = 640;
         videoHeight = 480;
 
         switch (videoSize)
         {
-            case VideoSize.QVGA:
+            case 0:
                 videoWidth = 320;
                 videoHeight = 240;
                 break;
-            case VideoSize.VGA:
+            case 1:
                 videoWidth = 640;
                 videoHeight = 480;
                 break;
-            case VideoSize.HD:
+            case 2:
                 videoWidth = 1280;
                 videoHeight = 720;
                 break;
-            case VideoSize.FHD:
+            case 3:
                 videoWidth = 1920;
                 videoHeight = 1080;
                 break;
-            case VideoSize._4K:
+            case 4:
                 videoWidth = 3840;
                 videoHeight = 2160;
                 break;
@@ -845,14 +869,14 @@ public class SoraSample : MonoBehaviour
 
     public void OnClickSend()
     {
-        if (fixedDataChannelLabels == null || sora == null)
+        if (fixedDataChannelLabels == null || sora == null || inputDatachannelsMessege == null)
         {
             return;
         }
         // DataChannel メッセージを使って全てのラベルに適当なデータを送る
         foreach (var label in fixedDataChannelLabels)
         {
-            string message = "aaa";
+            string message = inputDatachannelsMessege.text;
             sora.SendMessage(label, System.Text.Encoding.UTF8.GetBytes(message));
         }
     }
@@ -882,6 +906,7 @@ public class SoraSample : MonoBehaviour
         }
         int videoWidth;
         int videoHeight;
+        int videoSize = videoSizeDropdown.value;
         GetVideoSize(videoSize, out videoWidth, out videoHeight);
 
         if (captureUnityCamera)
@@ -894,6 +919,10 @@ public class SoraSample : MonoBehaviour
             sora.SwitchCamera(Sora.CameraConfig.FromUnityCamera(capturedCamera, 16, videoWidth, videoHeight, videoFps));
             captureUnityCamera = true;
         }
+    }
+    public void OnClickBackMainScene()
+    {
+        SceneManager.LoadSceneAsync("manager");
     }
 
     void OnApplicationQuit()
